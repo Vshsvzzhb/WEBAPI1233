@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator QR Code</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #qrcode {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+        }
+        .download-btn {
+            background-color: #2ecc71;
+            display: none;
+            margin-top: 10px;
+        }
+        .download-btn:hover {
+            background-color: #27ae60;
+        }
+        .options {
+            text-align: left;
+            margin: 15px 0;
+        }
+        .options label {
+            display: inline-block;
+            margin-right: 15px;
+        }
+    </style>
+    <!-- Library untuk generate QR Code -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Generator QR Code</h1>
+        
+        <textarea id="qrText" placeholder="Masukkan teks atau URL..."></textarea>
+        
+        <div class="options">
+            <label>
+                Ukuran:
+                <select id="qrSize">
+                    <option value="100">100x100</option>
+                    <option value="150">150x150</option>
+                    <option value="200" selected>200x200</option>
+                    <option value="250">250x250</option>
+                    <option value="300">300x300</option>
+                </select>
+            </label>
+            
+            <label>
+                Warna:
+                <input type="color" id="qrColor" value="#000000">
+            </label>
+            
+            <label>
+                Latar Belakang:
+                <input type="color" id="qrBgColor" value="#ffffff">
+            </label>
+        </div>
+        
+        <button onclick="generateQRCode()">Generate QR Code</button>
+        
+        <div id="qrcode"></div>
+        
+        <button id="downloadBtn" class="download-btn" onclick="downloadQRCode()">Download QR Code</button>
+    </div>
+
+    <script>
+        let currentQRCode = null;
+        
+        function generateQRCode() {
+            const text = document.getElementById('qrText').value;
+            const size = document.getElementById('qrSize').value;
+            const color = document.getElementById('qrColor').value;
+            const bgColor = document.getElementById('qrBgColor').value;
+            
+            if (!text) {
+                alert('Masukkan teks atau URL terlebih dahulu');
+                return;
+            }
+            
+          
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            
+          
+            currentQRCode = new QRCode(qrcodeDiv, {
+                text: text,
+                width: parseInt(size),
+                height: parseInt(size),
+                colorDark: color,
+                colorLight: bgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+           
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+        }
+        
+        function downloadQRCode() {
+            if (!currentQRCode) {
+                alert('Generate QR Code terlebih dahulu');
+                return;
+            }
+            
+            const qrcodeDiv = document.getElementById('qrcode');
+            const canvas = qrcodeDiv.querySelector('canvas');
+            
+            if (!canvas) {
+                alert('Tidak dapat menemukan QR Code untuk didownload');
+                return;
+            }
+            
+        
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+       
+        document.getElementById('qrText').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+    </script>
+</body>
+</html>
